@@ -6,6 +6,7 @@ import userRouter from './routes/userRoute.js';
 import 'dotenv/config';
 import cartRouter from './routes/cartRoute.js';
 import orderRouter from './routes/orderRoute.js';
+import corsMiddleware from './middleware/corsMiddleware.js';
 
 //app config
 const app = express()
@@ -15,7 +16,7 @@ const port = process.env.PORT || 5000
 // middleware
 app.use(express.json())
 // Simple, global CORS for development
-app.use(cors({ origin: 'http://localhost:3000', credentials: true }));
+app.use(corsMiddleware);
 
 //db connection
 connectDB();

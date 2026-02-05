@@ -1,11 +1,26 @@
 import cors from 'cors';
 
-// Development-friendly CORS: allow all origins, keep credentials support.
-// You can tighten this later for production.
+// CORS configuration: allow localhost:3000 and localhost:3001
 const corsOptions = {
-  origin: true,
+  origin: function (origin, callback) {
+    const allowedOrigins = [
+      'http://localhost:3000',
+      'http://localhost:3001'
+    ];
+    
+    // Allow requests with no origin (like mobile apps, Postman, curl, etc.)
+    if (!origin) {
+      return callback(null, true);
+    }
+    
+    if (allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE'],
-  allowedHeaders: ['Authorization', 'Content-Type', 'X-Requested-With'],
+  allowedHeaders: ['Authorization', 'Content-Type', 'X-Requested-With', 'token'],
   credentials: true,
   optionsSuccessStatus: 204,
 };
