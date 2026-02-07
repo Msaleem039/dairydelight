@@ -5,7 +5,9 @@ const corsOptions = {
   origin: function (origin, callback) {
     const allowedOrigins = [
       'http://localhost:3000',
-      'http://localhost:3001'
+      'http://localhost:3001',
+      'https://www.dairydelightcheese.com/',
+      
     ];
     
     // Allow requests with no origin (like mobile apps, Postman, curl, etc.)
