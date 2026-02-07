@@ -1,13 +1,15 @@
 import cors from 'cors';
 
-// CORS configuration: allow localhost:3000 and localhost:3001
+// CORS configuration: allow localhost (dev) and production domains
 const corsOptions = {
   origin: function (origin, callback) {
     const allowedOrigins = [
+      // Development
       'http://localhost:3000',
       'http://localhost:3001',
-      'https://www.dairydelightcheese.com/',
-      
+      // Production
+      'https://dairydelightcheese.com',
+      'https://www.dairydelightcheese.com'
     ];
     
     // Allow requests with no origin (like mobile apps, Postman, curl, etc.)
