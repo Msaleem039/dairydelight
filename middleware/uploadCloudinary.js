@@ -18,7 +18,16 @@ const storage = multer.diskStorage({
     }
 });
 
-const upload = multer({ storage: storage });
+// Configure multer with file size limit (50MB) and field size limits
+const upload = multer({ 
+  storage: storage,
+  limits: {
+    fileSize: 50 * 1024 * 1024, // 50MB file size limit
+    fieldSize: 10 * 1024 * 1024, // 10MB field size limit (for description, name, etc.)
+    fields: 10, // Maximum number of non-file fields
+    fieldNameSize: 100 // Maximum field name size
+  }
+});
 
 // Middleware to upload file to Cloudinary
 const uploadToCloudinary = async (req, res, next) => {

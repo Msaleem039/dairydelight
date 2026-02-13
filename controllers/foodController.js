@@ -9,11 +9,36 @@ const addFood = async (req,res) =>{
             return res.json({ success: false, message: 'Image upload failed' });
         }
 
+        // Validate required fields
+        if (!req.body.name || req.body.name.trim().length === 0) {
+            return res.json({ success: false, message: 'Name is required' });
+        }
+        if (!req.body.description || req.body.description.trim().length === 0) {
+            return res.json({ success: false, message: 'Description is required' });
+        }
+        if (!req.body.price || isNaN(req.body.price)) {
+            return res.json({ success: false, message: 'Valid price is required' });
+        }
+        if (!req.body.category || req.body.category.trim().length === 0) {
+            return res.json({ success: false, message: 'Category is required' });
+        }
+
+        // Validate field lengths (prevent extremely long text)
+        if (req.body.name.length > 200) {
+            return res.json({ success: false, message: 'Name must be less than 200 characters' });
+        }
+        if (req.body.description.length > 5000) {
+            return res.json({ success: false, message: 'Description must be less than 5000 characters' });
+        }
+        if (req.body.category.length > 100) {
+            return res.json({ success: false, message: 'Category must be less than 100 characters' });
+        }
+
         const food = new foodModel({
-            name: req.body.name,
-            description: req.body.description,
-            price: req.body.price,
-            category: req.body.category,
+            name: req.body.name.trim(),
+            description: req.body.description.trim(),
+            price: parseFloat(req.body.price),
+            category: req.body.category.trim(),
             image: req.cloudinaryResult.secure_url // Store Cloudinary URL
         })
 
@@ -21,7 +46,7 @@ const addFood = async (req,res) =>{
         res.json({success:true, message:'Food Added'})
     } catch (error) {
         console.log(error)
-        res.json({success:false, message:'Error'})
+        res.json({success:false, message: error.message || 'Error'})
     }
 }
 
