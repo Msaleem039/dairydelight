@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>New Order Received</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f6f9fc;
+      padding: 20px;
+      color: #333;
+    }
+    .container {
+      background-color: #fff;
+      border-radius: 8px;
+      padding: 30px;
+      max-width: 700px;
+      margin: 0 auto;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+    h2 {
+      color: #0077cc;
+      margin-top: 0;
+    }
+    .order-header {
+      background-color: #f0f7ff;
+      padding: 15px;
+      border-radius: 5px;
+      margin-bottom: 20px;
+    }
+    .order-info {
+      margin: 15px 0;
+    }
+    .order-info strong {
+      color: #000;
+      display: inline-block;
+      width: 150px;
+    }
+    .items-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 20px 0;
+    }
+    .items-table th {
+      background-color: #f0f7ff;
+      padding: 12px;
+      text-align: left;
+      border-bottom: 2px solid #0077cc;
+    }
+    .items-table td {
+      padding: 10px 12px;
+      border-bottom: 1px solid #e0e0e0;
+    }
+    .items-table tr:last-child td {
+      border-bottom: none;
+    }
+    .total {
+      text-align: right;
+      font-size: 18px;
+      font-weight: bold;
+      color: #0077cc;
+      margin-top: 15px;
+    }
+    .address-box {
+      background-color: #f9f9f9;
+      padding: 15px;
+      border-radius: 5px;
+      margin: 15px 0;
+    }
+    .status-badge {
+      display: inline-block;
+      padding: 5px 15px;
+      border-radius: 20px;
+      background-color: #ffa500;
+      color: #fff;
+      font-weight: bold;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>🛒 New Order Received</h2>
+    
+    <div class="order-header">
+      <div class="order-info">
+        <strong>Order ID:</strong> <%= orderId %>
+      </div>
+      <div class="order-info">
+        <strong>Status:</strong> <span class="status-badge"><%= status %></span>
+      </div>
+      <div class="order-info">
+        <strong>Date:</strong> <%= orderDate %>
+      </div>
+      <% if (userId) { %>
+      <div class="order-info">
+        <strong>User ID:</strong> <%= userId %>
+      </div>
+      <% } %>
+    </div>
+
+    <h3 style="color: #0077cc; margin-top: 25px;">Order Items:</h3>
+    <table class="items-table">
+      <thead>
+        <tr>
+          <th>Item</th>
+          <th>Quantity</th>
+          <th>Price</th>
+          <th>Subtotal</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% items.forEach(function(item) { %>
+        <tr>
+          <td><%= item.name || item.id %></td>
+          <td><%= item.quantity || 1 %></td>
+          <td>$<%= (item.price || 0).toFixed(2) %></td>
+          <td>$<%= ((item.price || 0) * (item.quantity || 1)).toFixed(2) %></td>
+        </tr>
+        <% }); %>
+      </tbody>
+    </table>
+
+    <div class="total">
+      Total Amount: $<%= amount.toFixed(2) %>
+    </div>
+
+    <h3 style="color: #0077cc; margin-top: 25px;">Delivery Address:</h3>
+    <div class="address-box">
+      <% if (address.street) { %><p><strong>Street:</strong> <%= address.street %></p><% } %>
+      <% if (address.city) { %><p><strong>City:</strong> <%= address.city %></p><% } %>
+      <% if (address.state) { %><p><strong>State:</strong> <%= address.state %></p><% } %>
+      <% if (address.zip) { %><p><strong>ZIP:</strong> <%= address.zip %></p><% } %>
+      <% if (address.country) { %><p><strong>Country:</strong> <%= address.country %></p><% } %>
+      <% if (address.phone) { %><p><strong>Phone:</strong> <%= address.phone %></p><% } %>
+    </div>
+
+    <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #e0e0e0; color: #666; font-size: 14px;">
+      <p><strong>Payment Method:</strong> Cash on Delivery</p>
+      <p>Please process this order and update the status accordingly.</p>
+    </div>
+  </div>
+</body>
+</html>
+

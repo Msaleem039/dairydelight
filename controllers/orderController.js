@@ -1,5 +1,6 @@
 import orderModel from './../models/orderModel.js';
 import userModel from './../models/userModel.js';
+import sendEmail from '../middleware/sendEmail.js';
 
 // Placing user order for frontend (Cash on Delivery)
 const placeOrder = async (req, res) => {
@@ -33,6 +34,36 @@ const placeOrder = async (req, res) => {
                 console.log('Cart clear error (non-critical):', cartError);
                 // Continue even if cart clearing fails
             }
+        }
+
+        // Send email notification to admin
+        try {
+            const orderDate = new Date(newOrder.date).toLocaleString('en-US', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+
+            await sendEmail({
+                email: 'armanlhr247@gmail.com',
+                subject: `New Order Received - Order #${newOrder._id}`,
+                templatePath: 'order-notification.ejs',
+                templateData: {
+                    orderId: newOrder._id.toString(),
+                    status: newOrder.status,
+                    orderDate: orderDate,
+                    userId: newOrder.userId || 'Guest',
+                    items: newOrder.items,
+                    amount: newOrder.amount,
+                    address: newOrder.address
+                }
+            });
+            console.log('✅ Order notification email sent to admin');
+        } catch (emailError) {
+            console.log('⚠️ Email notification failed (non-critical):', emailError);
+            // Continue even if email fails - order is still created
         }
 
         res.json({ 

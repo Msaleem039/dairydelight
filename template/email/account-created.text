@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Welcome to Your Company</title>
+  <style>
+    body {
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f0f4f8;
+      margin: 0;
+      padding: 0;
+    }
+    .container {
+      background-color: #ffffff;
+      max-width: 600px;
+      margin: 40px auto;
+      padding: 32px;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    }
+    h2 {
+      color: #2a4365;
+      font-size: 24px;
+      margin-bottom: 10px;
+    }
+    p {
+      color: #4a5568;
+      font-size: 15px;
+      line-height: 1.6;
+    }
+    .info-box {
+      background-color: #edf2f7;
+      padding: 20px;
+      border-radius: 8px;
+      margin: 20px 0;
+    }
+    .label {
+      color: #718096;
+      font-size: 13px;
+      font-weight: bold;
+      margin-top: 10px;
+    }
+    .value {
+      font-size: 16px;
+      color: #2d3748;
+      margin-bottom: 8px;
+    }
+    .footer {
+      font-size: 13px;
+      color: #a0aec0;
+      text-align: center;
+      margin-top: 30px;
+      line-height: 1.6;
+    }
+    .footer strong {
+      color: #4a5568;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Welcome, <%= firstName %>!</h2>
+    <p>We're excited to have you on board. Your account has been successfully created. Below are your login details:</p>
+
+    <div class="info-box">
+      <div class="label">Email</div>
+      <div class="value"><%= email %></div>
+
+      <div class="label"> Password</div>
+      <div class="value"><%= password %></div>
+
+      <div class="label">Assigned Role</div>
+      <div class="value"><%= role %></div>
+    </div>
+     Visit app.StrategemMedia.com
+    <p>Then
+Enter your email and password</p>
+
+    <div class="footer">
+      If you have any questions or need help, feel free to contact our support team.<br>
+      Thanks for joining us!<br>
+    
+    </div>
+  </div>
+</body>
+</html>
