@@ -6,6 +6,8 @@ const corsOptions = {
     const allowedOrigins = [
       'http://localhost:3000',
       'http://localhost:3001',
+      'https://omasalahub.com',
+      'https://www.omasalahub.com',
       'https://dairydelightcheese.com',
       'https://www.dairydelightcheese.com'
     ];
@@ -18,7 +20,9 @@ const corsOptions = {
     if (allowedOrigins.includes(origin) || /^http:\/\/localhost:\d+$/.test(origin)) {
       callback(null, true);
     } else {
-      callback(new Error('Not allowed by CORS'));
+      // Deny quietly. Throwing here becomes an unhandled 500 on the preflight,
+      // which the browser reports as a CORS failure.
+      callback(null, false);
     }
   },
   methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE'],
