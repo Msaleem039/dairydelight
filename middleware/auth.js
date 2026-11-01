@@ -1,28 +1,24 @@
-import  jwt  from 'jsonwebtoken';
+import jwt from "jsonwebtoken";
 
-const authMiddleware = async (req, res, next) =>{
-    // Support both 'token' header and 'Authorization: Bearer <token>'
-    let token = req.headers.token;
-    if (!token && req.headers.authorization) {
-        // Extract token from "Bearer <token>"
-        const authHeader = req.headers.authorization;
-        if (authHeader.startsWith('Bearer ')) {
-            token = authHeader.substring(7);
-        }
-    }
-    
-    if(!token){
-        return res.json({success:false, message:'Not Authorized, login again'})
-    }
+const secret = () => process.env.JWT_SECRET || "dev_fallback_jwt_secret_change_me";
 
-    try {
-        const token_decode = jwt.verify(token, process.env.JWT_SECRET || 'dev_fallback_jwt_secret_change_me');
-        req.body.userId = token_decode.id;
-        next();
-    } catch (error) {
-        console.log(error)
-        res.json({success:false, message:'Error'})
-    }
+export function readToken(req) {
+  let token = req.headers.token;
+  if (!token && req.headers.authorization?.startsWith("Bearer ")) token = req.headers.authorization.slice(7);
+  if (!token) return null;
+  try {
+    return jwt.verify(token, secret()).id;
+  } catch {
+    return null;
+  }
 }
+
+const authMiddleware = async (req, res, next) => {
+  const userId = readToken(req);
+  if (!userId) return res.status(401).json({ success: false, error: "forbidden", message: "Not Authorized, login again" });
+  req.body = req.body || {};
+  req.body.userId = userId;
+  next();
+};
 
 export default authMiddleware;

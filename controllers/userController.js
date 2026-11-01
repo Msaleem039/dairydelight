@@ -1,82 +1,61 @@
 import userModel from "../models/userModel.js";
-import jwt from 'jsonwebtoken'
-import bcrypt from 'bcrypt'
-import validator from 'validator'
+import jwt from "jsonwebtoken";
+import bcrypt from "bcrypt";
+import { readToken } from "../middleware/auth.js";
+import { publicUser, registerCustomer, updateProfile } from "../services/store.js";
 
-//login user
-const loginUser = async (req,res) =>{
-    const {email, password} = req.body;
-    try {
-        const user = await userModel.findOne({email});
-
-        if(!user){
-           return res.json({success:false, message:'User does not exist'}) 
-        }
-
-        const isMatch = await bcrypt.compare(password,user.password)
-
-        if(!isMatch){
-            return res.json({success:false, message:'Invalid credentials'})
-        }
-
-        const token = createToken(user._id);
-        res.json({success:true, token, role:user.role})
-    } catch (error) {
-        console.log(error)
-        res.json({success:false, message: error.message || 'Error'})
-    }
+function fail(res, code, status = 400) {
+  return res.status(status).json({ success: false, error: code, message: code });
 }
 
-const createToken = (id) =>{
-    // Fallback value so login/register still work even if env var is missing
-    const secret = process.env.JWT_SECRET || 'dev_fallback_jwt_secret_change_me';
-    return jwt.sign({id}, secret);
-}
+const createToken = (id) => {
+  const secret = process.env.JWT_SECRET || "dev_fallback_jwt_secret_change_me";
+  return jwt.sign({ id }, secret, { expiresIn: "7d" });
+};
 
-//register user
-const registerUser = async (req, res) =>{
-    const {name,password,email,role} = req.body;
-    try {
+const loginUser = async (req, res) => {
+  const { email, password } = req.body;
+  try {
+    const user = await userModel.findOne({ email: String(email || "").trim().toLowerCase() });
+    if (!user) return fail(res, "credentials", 401);
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) return fail(res, "credentials", 401);
+    const token = createToken(user._id);
+    return res.json({ success: true, token, role: user.role === "admin" ? "admin" : "customer", user: publicUser(user) });
+  } catch (error) {
+    console.log(error);
+    return fail(res, "generic");
+  }
+};
 
-        // checking is user already exists
-        const exists = await userModel.findOne({email});
-        if(exists){
-            return res.json({success:false, message:'User already exists'})
-        }
+const registerUser = async (req, res) => {
+  try {
+    const role = req.body.role === "admin" ? "admin" : "user";
+    const result = await registerCustomer({ name: req.body.name, email: req.body.email, password: req.body.password, role });
+    if (!result.ok) return fail(res, result.code, result.code === "email_taken" ? 409 : 400);
+    const token = createToken(result.user._id);
+    return res.status(201).json({ success: true, token, role: publicUser(result.user).role, user: publicUser(result.user) });
+  } catch (error) {
+    console.log(error);
+    return fail(res, "generic");
+  }
+};
 
-        //validating email format and strong password
-        if(!validator.isEmail(email)){
-            return res.json({success:false, message:'Please enter a valid email'})
-        }
+const me = async (req, res) => {
+  const userId = readToken(req);
+  if (!userId) return res.json({ success: true, user: null });
+  const user = await userModel.findById(userId);
+  return res.json({ success: true, user: publicUser(user) });
+};
 
-        if(password.length<8){
-            return res.json({success:false, message:'Please enter a strong password'})
-        }
+const profile = async (req, res) => {
+  const result = await updateProfile(req.body.userId, req.body);
+  if (!result.ok) return fail(res, result.code);
+  return res.json({ success: true, user: result.user });
+};
 
-        // Validate role if provided
-        if(role && !['admin','user'].includes(role)){
-            return res.json({success:false, message:'Invalid role. Role must be admin or user'})
-        }
+const logoutUser = async (req, res) => {
+  return res.json({ success: true });
+};
 
-        // hashing user password
-        const salt = await bcrypt.genSalt(10)
-        const hashedPassword = await bcrypt.hash(password,salt);
-
-        const newUser = new userModel({
-            name:name,
-            email:email,
-            password:hashedPassword,
-            role:role || 'user'
-        })
-
-      const user =  await newUser.save()
-      const token = createToken(user._id)
-      res.json({success:true, token, role:user.role})
-
-    } catch (error) {
-        console.log(error)
-        res.json({success:false, message: error.message || 'Error'})
-    }
-}
-
-export {loginUser, registerUser}
+export { loginUser, registerUser, me, profile, logoutUser };

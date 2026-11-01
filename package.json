@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "nodemon server.js",
     "server": "nodemon server.js",
-    "start": "node server.js"
+    "start": "node server.js",
+    "test": "node --test tests/rules.test.js"
   },
   "author": "",
   "license": "ISC",

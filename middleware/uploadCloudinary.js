@@ -33,6 +33,7 @@ const upload = multer({
 const uploadToCloudinary = async (req, res, next) => {
   try {
     if (!req.file) {
+      if (req.body?.image || req.body?.id) return next();
       return res.json({ success: false, message: 'No file uploaded' });
     }
 
@@ -64,4 +65,13 @@ const uploadToCloudinary = async (req, res, next) => {
 
 // Combined middleware: multer + cloudinary upload
 export const uploadSingle = [upload.single('image'), uploadToCloudinary];
+
+export function uploadOptional(req, res, next) {
+  const type = req.headers["content-type"] || "";
+  if (!type.includes("multipart/form-data")) return next();
+  return upload.single("image")(req, res, (error) => {
+    if (error) return res.json({ success: false, message: error.message || "Upload failed" });
+    return uploadToCloudinary(req, res, next);
+  });
+}
 

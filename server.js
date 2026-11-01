@@ -15,7 +15,12 @@ const port = process.env.PORT || 5000
 
 // middleware
 // Increase body size limit for JSON (50MB)
-app.use(express.json({ limit: '50mb' }));
+app.use(express.json({
+  limit: '50mb',
+  verify: (req, _res, buf) => {
+    req.rawBody = buf;
+  },
+}));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
 // Simple, global CORS for development
 app.use(corsMiddleware);
@@ -37,5 +42,3 @@ app.get("/",(req,res)=>{
 app.listen(port,()=>{
     console.log(`Server started on http://localhost:${port}`)
 })
-
-//mongodb+srv://dulanjalisenarathna93:E2JUb0zfaT2FVp8D@cluster0.exkxkun.mongodb.net/?

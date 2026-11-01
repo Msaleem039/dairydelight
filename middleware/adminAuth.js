@@ -13,7 +13,7 @@ const adminAuth = async (req, res, next) => {
     }
     
     if (!token) {
-        return res.json({ success: false, message: 'Not Authorized, login again' });
+        return res.status(401).json({ success: false, error: 'forbidden', message: 'Not Authorized, login again' });
     }
 
     try {
@@ -21,18 +21,19 @@ const adminAuth = async (req, res, next) => {
         const user = await userModel.findById(token_decode.id);
         
         if (!user) {
-            return res.json({ success: false, message: 'User not found' });
+            return res.status(401).json({ success: false, error: 'forbidden', message: 'User not found' });
         }
 
         if (user.role !== 'admin') {
-            return res.json({ success: false, message: 'Access denied. Admin role required' });
+            return res.status(403).json({ success: false, error: 'forbidden', message: 'Access denied. Admin role required' });
         }
 
+        req.body = req.body || {};
         req.body.userId = token_decode.id;
         next();
     } catch (error) {
         console.log(error);
-        res.json({ success: false, message: 'Error' });
+        res.status(401).json({ success: false, error: 'forbidden', message: 'Error' });
     }
 };
 

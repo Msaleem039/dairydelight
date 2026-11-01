@@ -1,10 +1,15 @@
 import mongoose from "mongoose";
+import { bootstrap } from "../services/store.js";
 
 
 
 export const connectDB = async () => {
     try {
-        const mongoURI = process.env.MONGODB_URI || 'mongodb+srv://sk8901894_db_user:58lF98HlgWGxNCCO@cluster0.6ykangy.mongodb.net/dairydelight?appName=Cluster0';
+        const mongoURI = process.env.MONGODB_URI;
+        if (!mongoURI) {
+            console.error("Set MONGODB_URI in dairydelight/.env before starting the API.");
+            return;
+        }
         
         const options = {
             // Connection pool options
@@ -31,6 +36,7 @@ export const connectDB = async () => {
 
         await mongoose.connect(mongoURI, options);
         console.log('✅ DB connected successfully');
+        await bootstrap();
     } catch (error) {
         console.error('❌ DB connection error:', error.message);
         if (error.name === 'MongoServerSelectionError') {

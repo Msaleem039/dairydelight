@@ -4,10 +4,8 @@ import cors from 'cors';
 const corsOptions = {
   origin: function (origin, callback) {
     const allowedOrigins = [
-      // Development
       'http://localhost:3000',
       'http://localhost:3001',
-      // Production
       'https://dairydelightcheese.com',
       'https://www.dairydelightcheese.com'
     ];
@@ -17,14 +15,14 @@ const corsOptions = {
       return callback(null, true);
     }
     
-    if (allowedOrigins.includes(origin)) {
+    if (allowedOrigins.includes(origin) || /^http:\/\/localhost:\d+$/.test(origin)) {
       callback(null, true);
     } else {
       callback(new Error('Not allowed by CORS'));
     }
   },
   methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE'],
-  allowedHeaders: ['Authorization', 'Content-Type', 'X-Requested-With', 'token'],
+  allowedHeaders: ['Authorization', 'Content-Type', 'X-Requested-With', 'token', 'x-order-token'],
   credentials: true,
   optionsSuccessStatus: 204,
 };
