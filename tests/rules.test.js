@@ -9,6 +9,16 @@ test("closed hours block immediate orders", () => {
   assert.equal(decision.code, "closed");
 });
 
+test("takeaway can book a pickup time without turning on scheduled delivery", () => {
+  const now = new Date("2026-06-15T10:00:00Z");
+  const settings = { ...DEFAULT_SETTINGS, allowScheduled: false };
+  const pickup = orderingDecision(now, settings, [], "pickup", { date: "2026-06-15", time: "14:00" });
+  assert.equal(pickup.ok, true);
+  const delivery = orderingDecision(now, settings, [], "delivery", { date: "2026-06-15", time: "14:00" });
+  assert.equal(delivery.ok, false);
+  assert.equal(delivery.code, "schedule_disabled");
+});
+
 test("expired coupons are rejected", () => {
   const result = evaluateCoupon(
     {
