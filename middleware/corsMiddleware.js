@@ -8,6 +8,8 @@ const corsOptions = {
       'http://localhost:3001',
       'https://omasalahub.com',
       'https://www.omasalahub.com',
+      'https://tasteoflahoremasala.com',
+      'https://www.tasteoflahoremasala.com',
       'https://dairydelightcheese.com',
       'https://www.dairydelightcheese.com'
     ];
